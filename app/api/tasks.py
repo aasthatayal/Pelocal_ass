@@ -74,8 +74,9 @@ async def create_task(task: TaskCreate):
     }
 )
 async def get_tasks(
-    status: Optional[str] = Query(
+    task_status: Optional[str] = Query(
         None,
+        alias="status",
         description="Filter tasks by status (pending, in_progress, completed)"
     )
 ):
@@ -85,15 +86,15 @@ async def get_tasks(
     - **status**: Optional status filter (pending, in_progress, completed)
     """
     try:
-        logger.info(f"Retrieving tasks with status filter: {status}")
+        logger.info(f"Retrieving tasks with status filter: {task_status}")
         
-        if status and status not in ['pending', 'in_progress', 'completed']:
+        if task_status and task_status not in ['pending', 'in_progress', 'completed']:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid status. Must be one of: pending, in_progress, completed"
             )
         
-        tasks = task_repo.get_all_tasks(status=status)
+        tasks = task_repo.get_all_tasks(status=task_status)
         logger.info(f"Retrieved {len(tasks)} tasks")
         
         return TaskListResponse(
