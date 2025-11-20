@@ -37,5 +37,21 @@ services:
       - .:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
+  # Restore service - Use this to restore database from backup
+  # Run: docker compose run --rm restore
+  restore:
+    image: postgres:15-alpine
+    container_name: todo_restore
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db:/backup
+    environment:
+      PGPASSWORD: todo_password
+    command: sh -c "psql -h postgres -U todo_user -d todo_db < /backup/backup.sql"
+    profiles:
+      - tools
+
 volumes:
   postgres_data:

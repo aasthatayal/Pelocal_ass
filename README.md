@@ -129,15 +129,17 @@ CREATE TABLE tasks (
 To restore the database from the backup file:
 
 ```bash
-# Method 1: Using docker compose
+# Method 1: Using docker compose restore service (Recommended)
+docker compose run --rm restore
+
+# Method 2: Using docker compose exec
 docker compose exec -T postgres psql -U todo_user -d todo_db < db/backup.sql
 
-# Method 2: Using docker directly
+# Method 3: Using docker directly
 docker exec -i todo_postgres psql -U todo_user -d todo_db < db/backup.sql
 
-# Method 3: Copy file into container and restore
-docker cp db/backup.sql todo_postgres:/tmp/backup.sql
-docker compose exec postgres psql -U todo_user -d todo_db -f /tmp/backup.sql
+# Method 4: Using the restore script
+./db/restore.sh
 ```
 
 ### Create New Backup
